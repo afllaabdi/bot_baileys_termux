@@ -84,6 +84,9 @@ class TaskFlowBot {
         this.connectionManager.start();
     }
 
+    /**
+     * Handle incoming message
+     */
     async handleMessage(msg) {
         if (!msg?.message || msg.key.fromMe) return;
 
@@ -98,20 +101,34 @@ class TaskFlowBot {
         const isMentioned = msg.message.extendedTextMessage?.contextInfo?.mentionedJid?.includes(botNumber);
         const isReplyToBot = msg.message.extendedTextMessage?.contextInfo?.participant === botNumber;
 
-        // Check prefix - only respond if message starts with prefix
+        // Get text without prefix
         const hasPrefix = Config.COMMAND_PREFIX && text.trim().startsWith(Config.COMMAND_PREFIX);
+        const cleanText = hasPrefix ? text.trim().substring(1) : text.trim();
 
-        // In groups: only respond if mentioned, replied to bot, OR (has prefix AND command starts with prefix)
-        // In private: respond to all valid commands (prefix optional for familiarity)
-        const shouldRespond = isGroup
-            ? (isMentioned || isReplyToBot || (hasPrefix && this.isCommand(text.trim().substring(1))))
-            : (hasPrefix || this.isCommand(text));
+        // Determine if we should respond
+        // In groups: only respond if mentioned, replied to bot, OR valid command (with or without prefix)
+        // In private: respond to all valid commands
+        let shouldRespond = false;
+
+        if (isGroup) {
+            // In groups, respond if:
+            // 1. Bot is mentioned
+            // 2. Reply to bot
+            // 3. Command with prefix (e.g., "!list", "!done 1")
+            // 4. Command without prefix (e.g., "+tugas 2h", ".done 1") - but only if it's a valid command
+            if (isMentioned || isReplyToBot) {
+                shouldRespond = true;
+            } else if (hasPrefix && this.isValidCommand(cleanText)) {
+                shouldRespond = true;
+            }
+        } else {
+            // In private chat, respond to all valid commands
+            shouldRespond = this.isValidCommand(cleanText);
+        }
 
         if (!shouldRespond) return;
 
         try {
-            // Remove prefix from text if present
-            const cleanText = hasPrefix ? text.trim().substring(1) : text;
             const response = await this.processCommand(cleanText, from, isMentioned);
             if (response) {
                 await this.sendResponse(from, response);
@@ -121,12 +138,28 @@ class TaskFlowBot {
         }
     }
 
-    isCommand(text) {
-        const trimmed = text.trim().toLowerCase();
-        return trimmed.startsWith("+") ||
-               trimmed.startsWith(".") ||
-               trimmed.startsWith("/") ||
-               ["list", "stats", "menu", "help", "hi", "halo", "hai", "?"].includes(trimmed);
+    /**
+     * Check if text is a valid command (with or without prefix)
+     */
+    isValidCommand(text) {
+        const trimmed = text.trim();
+        // Check for task commands: +tugas, .done, .del, etc.
+        if (trimmed.startsWith("+")) return true;
+        if (trimmed.startsWith(".")) {
+            const action = trimmed.substring(1).split(" ")[0]?.toLowerCase();
+            const validActions = ["done", "d", "del", "delete", "hapus", "edit", "rename", "pin", "list", "l", "h", "?"];
+            return validActions.includes(action);
+        }
+        // Check for simple commands: list, stats, menu, help, hi, halo, ?
+        return this.isSimpleCommand(trimmed);
+    }
+
+    /**
+     * Check if text is a simple command (no prefix needed)
+     */
+    isSimpleCommand(text) {
+        const lower = text.trim().toLowerCase();
+        return ["list", "stats", "menu", "help", "hi", "halo", "hai", "yo", "hey", "?"].includes(lower);
     }
 
     extractText(msg) {
@@ -137,6 +170,9 @@ class TaskFlowBot {
             "";
     }
 
+    /**
+     * Process incoming message
+     */
     async processCommand(text, from, wasMentioned = false) {
         const trimmed = text.trim();
         const lower = trimmed.toLowerCase();
@@ -147,12 +183,16 @@ class TaskFlowBot {
         }
         this.db.recordActivity(from);
 
-        // Greeting - use different response if mentioned
+        // ─────────────────────────────────────────────────────────────────
+        // GREETING
+        // ─────────────────────────────────────────────────────────────────
         if (["hi", "halo", "hai", "yo", "hey"].includes(lower)) {
             return MessageUI.greeting(wasMentioned);
         }
 
-        // Quick help
+        // ─────────────────────────────────────────────────────────────────
+        // QUICK HELP
+        // ─────────────────────────────────────────────────────────────────
         if (lower === "?" || lower === "help") {
             return MessageUI.quickHelp();
         }
@@ -174,7 +214,7 @@ class TaskFlowBot {
         // ─────────────────────────────────────────────────────────────────
         // DASHBOARD
         // ─────────────────────────────────────────────────────────────────
-        if (lower === "list" || lower === ".list" || lower === "/list") {
+        if (["list", "/list"].includes(lower)) {
             return this.handleDashboard(from);
         }
 
@@ -192,7 +232,10 @@ class TaskFlowBot {
             return MessageUI.fullMenu();
         }
 
-        // Unknown command - in groups only respond if mentioned
+        // ─────────────────────────────────────────────────────────────────
+        // UNKNOWN COMMAND
+        // ─────────────────────────────────────────────────────────────────
+        // In groups only respond to unknown commands if mentioned
         if (wasMentioned) {
             return MessageUI.unknownCommand(trimmed);
         }

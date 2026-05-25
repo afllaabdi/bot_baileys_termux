@@ -89,11 +89,14 @@ Bot sekarang mendukung **group mode** - tidak akan merespons pesan random di gru
 Edit `src/config.js` untuk ubah prefix:
 
 ```javascript
-COMMAND_PREFIX: "!"   // Default
-COMMAND_PREFIX: "."   // Alternatif
-COMMAND_PREFIX: "/"   // Alternatif
-COMMAND_PREFIX: ""    // Nonaktifkan prefix
+COMMAND_PREFIX: "!"   // Default - pakai !list, !done
+COMMAND_PREFIX: "."   // Alternatif - pakai .list, .done
+COMMAND_PREFIX: ""    // Nonaktifkan prefix (private chat only)
 ```
+
+**Catatan:** Jika prefix = `!`, command masih bisa pakai `.` sebagai shortcut:
+- `!list` dan `list` → sama-sama work
+- `!done 1` dan `.done 1` → sama-sama work
 
 ---
 
@@ -158,7 +161,7 @@ COMMAND_PREFIX: ""    // Nonaktifkan prefix
 ### 1. Tambah Tugas Baru
 
 ```
-Kamu: +laporan AI 3h
+Kamu: !+laporan AI 3h
 Bot:  ✅ Tugas Ditambahkan
 
 📌 Laporan AI
@@ -171,7 +174,7 @@ Bot:  ✅ Tugas Ditambahkan
 ### 2. Lihat Dashboard
 
 ```
-Kamu: .list
+Kamu: !list
 Bot:
 ─────────────────────
 📊 TASKFLOW DASHBOARD
@@ -197,7 +200,7 @@ Bot:
 ### 3. Tandai Selesai
 
 ```
-Kamu: .done 1
+Kamu: !done 1
 Bot:  ✅ Tugas Selesai!
 
 📌 Laporan AI
@@ -208,7 +211,7 @@ Bot:  ✅ Tugas Selesai!
 ### 4. Lihat Stats
 
 ```
-Kamu: stats
+Kamu: !stats
 Bot:
 ─────────────────────
 📊 STATISTIK KAMU
@@ -363,10 +366,16 @@ Edit `src/config.js` untuk mengubah setting:
 
 ```javascript
 const CONFIG = {
+    // Command prefix - ganti sesuai keinginan
+    // "!"  → default, pakai !list, !done
+    // "."  → alternatif, pakai .list, .done
+    // ""   → nonaktif prefix (private chat only)
+    COMMAND_PREFIX: "!",
+
     // Reminder interval (ms)
     REMINDER_INTERVAL: 30_000,
 
-    // Routine reminder every (ms)
+    // Routine reminder setiap (ms) - 5 jam default
     REMINDER_ROUTIN: 5 * 60 * 60 * 1000,
 
     // Anti-spam cooldown (ms)
