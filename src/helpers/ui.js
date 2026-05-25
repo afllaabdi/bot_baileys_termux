@@ -16,13 +16,15 @@ class MessageUI {
     // GREETING & HELP
     // ═══════════════════════════════════════════════════════════════════════
 
-    static greeting() {
+    static greeting(isMentioned = false) {
         const hour = new Date().getHours();
         let greeting = "Halo";
         if (hour < 12) greeting = "Selamat Pagi";
         else if (hour < 17) greeting = "Selamat Siang";
         else if (hour < 21) greeting = "Selamat Sore";
         else greeting = "Selamat Malam";
+
+        const groupHint = isMentioned ? "" : "\n💡 Panggil saya dengan prefix `!` untuk akses command.";
 
         return `${greeting}! 👋
 
@@ -31,17 +33,15 @@ Saya TaskFlow, asisten produktivitas kamu.
 ━━━━━━━━━━━━━━━━━━━━━━━━
 📌 Cara cepat tambah tugas:
 
-${BULLET} +nama tugas 2h
-${BULLET} +meeting besok jam 8
-${BULLET} +laporan 3hari
+${BULLET} !+nama tugas 2h
+${BULLET} !+meeting besok jam 8
+${BULLET} !+laporan 3hari
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
-🔹 .list    → Lihat semua tugas
-🔹 .done 1  → Tandai selesai
-🔹 .del 1   → Hapus tugas
-🔹 stats    → Statistik kamu
-
-Ketik .h untuk bantuan lengkap`;
+🔹 !list    → Lihat semua tugas
+🔹 !done 1  → Tandai selesai
+🔹 !del 1   → Hapus tugas
+🔹 !stats   → Statistik kamu${groupHint}`;
     }
 
     static quickHelp() {
@@ -50,22 +50,22 @@ Ketik .h untuk bantuan lengkap`;
 
 ${DIVIDER_THIN}
 ➕ *Tambah Tugas:*
-  +nama 2h        → 2 jam
-  +nama 3hari     → 3 hari
-  +nama besok jam 8
+  !+nama 2h        → 2 jam
+  !+nama 3hari     → 3 hari
+  !+nama besok jam 8
 
 ${DIVIDER_THIN}
 ⚡ *Quick Actions:*
-  .done 1   → Selesai
-  .del 1    → Hapus
-  .pin 1    → Priority
-  .edit 1 nama baru → Edit
+  !done 1   → Selesai
+  !del 1    → Hapus
+  !pin 1    → Priority
+  !edit 1 nama baru → Edit
 
 ${DIVIDER_THIN}
 📋 *Lainnya:*
-  .list   → Dashboard
-  stats   → Statistik
-  menu    → Menu lengkap
+  !list   → Dashboard
+  !stats  → Statistik
+  !menu   → Menu lengkap
 ${DIVIDER}`;
     }
 
@@ -75,35 +75,36 @@ ${DIVIDER}`;
 
 ${DIVIDER_THIN}
 ➕ *Tambah Tugas*
-  +tugas 2h
-  +tugas besok jam 8
-  +tugas senin jam 10
-  +tugas 3hari
+  !+tugas 2h
+  !+tugas besok jam 8
+  !+tugas senin jam 10
+  !+tugas 3hari
 
 ${DIVIDER_THIN}
 📝 *Lihat Tugas*
-  .list        → Semua
-  .list aktif  → Belum
-  .list done   → Selesai
+  !list        → Semua
+  !list aktif  → Belum
+  !list done   → Selesai
 
 ${DIVIDER_THIN}
 ⚡ *Quick Actions*
-  .done [id]   → Selesai
-  .del [id]    → Hapus
-  .pin [id]    → Priority
-  .edit [id] [nama baru]
+  !done [id]   → Selesai
+  !del [id]    → Hapus
+  !pin [id]    → Priority
+  !edit [id] [nama baru]
 
 ${DIVIDER_THIN}
 📊 *Stats*
-  stats        → Statistik
+  !stats       → Statistik
 
 ${DIVIDER_THIN}
 💡 *Tips*
-  • ID tugas lihat di .list
+  • Mention bot untuk akses cepat
+  • ID tugas lihat di !list
   • Priority (pin) = Urgent
   • Kategori = Otomatis
 
-Ketik +nama tugas untuk mulai!
+Ketik !+nama tugas untuk mulai!
 ${DIVIDER}`;
     }
 
@@ -139,7 +140,7 @@ ${DIVIDER}`;
 
 ${error}
 
-📝 Contoh: +laporan 2h`;
+📝 Contoh: !+laporan 2h`;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -166,7 +167,7 @@ ${DIVIDER_THIN}
         if (tasks.length === 0) {
             return header + `📭 Belum ada tugas.
 
-Ketik +nama tugas untuk mulai!`;
+Ketik !+nama tugas untuk mulai!`;
         }
 
         let body = "";
@@ -319,15 +320,15 @@ Sekarang: ${isPinned ? "🔴 High Priority" : "⚪ Normal"}`;
 
 ID ${id} tidak ada.
 
-Ketik .list untuk melihat tugas.`;
+Ketik !list untuk melihat tugas.`;
     }
 
     static editUsage() {
         return `⚠️ *Format Edit Salah*
 
-Gunakan: .edit [id] [nama baru]
+Gunakan: !edit [id] [nama baru]
 
-Contoh: .edit 1 Laporan Final`;
+Contoh: !edit 1 Laporan Final`;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -339,7 +340,7 @@ Contoh: .edit 1 Laporan Final`;
 
 "${cmd}"
 
-Ketik .h untuk bantuan, atau +nama tugas untuk menambah.`;
+Ketik !h untuk bantuan, atau !+nama tugas untuk menambah.`;
     }
 
     static spamWarning() {

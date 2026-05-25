@@ -24,6 +24,15 @@ const CONFIG = {
     MAX_TASK_TITLE: 200,
     COOLDOWN_MS: 2000,  // Anti-spam: 2 seconds between messages
 
+    // Command prefix - bot only responds to messages with this prefix
+    // For group use, set to "!" or "." - bot won't respond to random messages
+    // Set to "" to allow all messages (private chat only)
+    COMMAND_PREFIX: "!",
+
+    // Allowed JIDs for group mode (empty = all groups allowed)
+    // Example: ["123456789-987654321@g.us", "group2@g.us"]
+    ALLOWED_GROUPS: [],
+
     // Keywords for auto-categorization
     CATEGORIES: {
         kuliah: ["kuliah", "kelas", "dosen", "ujian", "quiz", "tugas", "praktikum", "modul", "krs", "semester"],

@@ -88,18 +88,45 @@ class TaskFlowBot {
         if (!msg?.message || msg.key.fromMe) return;
 
         const from = msg.key.remoteJid;
+        const isGroup = from?.endsWith("@g.us");
         const text = this.extractText(msg);
+        const botNumber = this.socket.user?.id?.replace(":","@") || "";
 
         if (!text?.trim()) return;
 
+        // Check if this is a group and if bot is mentioned
+        const isMentioned = msg.message.extendedTextMessage?.contextInfo?.mentionedJid?.includes(botNumber);
+        const isReplyToBot = msg.message.extendedTextMessage?.contextInfo?.participant === botNumber;
+
+        // Check prefix - only respond if message starts with prefix
+        const hasPrefix = Config.COMMAND_PREFIX && text.trim().startsWith(Config.COMMAND_PREFIX);
+
+        // In groups: only respond if mentioned, replied to bot, OR (has prefix AND command starts with prefix)
+        // In private: respond to all valid commands (prefix optional for familiarity)
+        const shouldRespond = isGroup
+            ? (isMentioned || isReplyToBot || (hasPrefix && this.isCommand(text.trim().substring(1))))
+            : (hasPrefix || this.isCommand(text));
+
+        if (!shouldRespond) return;
+
         try {
-            const response = await this.processCommand(text, from);
+            // Remove prefix from text if present
+            const cleanText = hasPrefix ? text.trim().substring(1) : text;
+            const response = await this.processCommand(cleanText, from, isMentioned);
             if (response) {
                 await this.sendResponse(from, response);
             }
         } catch (err) {
             console.error("⚠️ Error:", err.message);
         }
+    }
+
+    isCommand(text) {
+        const trimmed = text.trim().toLowerCase();
+        return trimmed.startsWith("+") ||
+               trimmed.startsWith(".") ||
+               trimmed.startsWith("/") ||
+               ["list", "stats", "menu", "help", "hi", "halo", "hai", "?"].includes(trimmed);
     }
 
     extractText(msg) {
@@ -110,7 +137,7 @@ class TaskFlowBot {
             "";
     }
 
-    async processCommand(text, from) {
+    async processCommand(text, from, wasMentioned = false) {
         const trimmed = text.trim();
         const lower = trimmed.toLowerCase();
 
@@ -120,9 +147,9 @@ class TaskFlowBot {
         }
         this.db.recordActivity(from);
 
-        // Greeting
+        // Greeting - use different response if mentioned
         if (["hi", "halo", "hai", "yo", "hey"].includes(lower)) {
-            return MessageUI.greeting();
+            return MessageUI.greeting(wasMentioned);
         }
 
         // Quick help
@@ -165,8 +192,11 @@ class TaskFlowBot {
             return MessageUI.fullMenu();
         }
 
-        // Unknown command
-        return MessageUI.unknownCommand(trimmed);
+        // Unknown command - in groups only respond if mentioned
+        if (wasMentioned) {
+            return MessageUI.unknownCommand(trimmed);
+        }
+        return null;
     }
 
     async handleAddTask(input, from) {
