@@ -71,15 +71,16 @@ Bot sekarang mendukung **group mode** - tidak akan merespons pesan random di gru
 |---------|---------------|
 | Di-mention (@bot) | ✅ Ya |
 | Reply pesan bot | ✅ Ya |
-| Pakai prefix `!` + command valid | ✅ Ya |
+| Pakai prefix `!` + command | ✅ Ya |
+| Command valid (.done, .list, +tugas) | ✅ Ya |
 | Pesan random (tanpa mention/prefix) | ❌ Tidak |
 
 ### Contoh di Grup
 
 ```
 📢 Alice: !+tugas AI 3h          → ✅ Bot respons
-📢 Bob: !list                     → ✅ Bot respons
-📢 Charlie: @TaskFlow list        → ✅ Bot respons (mention)
+📢 Bob: .list                     → ✅ Bot respons
+📢 Charlie: @TaskFlow +tugas UI   → ✅ Bot respons (mention)
 📢 David: pagi semua!             → ❌ Bot diam
 📢 Eve: ada yang tahu deadline?   → ❌ Bot diam
 ```
@@ -89,14 +90,10 @@ Bot sekarang mendukung **group mode** - tidak akan merespons pesan random di gru
 Edit `src/config.js` untuk ubah prefix:
 
 ```javascript
-COMMAND_PREFIX: "!"   // Default - pakai !list, !done
-COMMAND_PREFIX: "."   // Alternatif - pakai .list, .done
-COMMAND_PREFIX: ""    // Nonaktifkan prefix (private chat only)
+COMMAND_PREFIX: "!"   // Default
+COMMAND_PREFIX: "."   // Alternatif
+COMMAND_PREFIX: ""    // Nonaktifkan (private chat only)
 ```
-
-**Catatan:** Jika prefix = `!`, command masih bisa pakai `.` sebagai shortcut:
-- `!list` dan `list` → sama-sama work
-- `!done 1` dan `.done 1` → sama-sama work
 
 ---
 
@@ -130,29 +127,29 @@ COMMAND_PREFIX: ""    // Nonaktifkan prefix (private chat only)
 
 | Command | Fungsi | Contoh |
 |---------|--------|--------|
-| `!done [id]` | Tandai selesai | `!done 1` |
-| `!del [id]` | Hapus tugas | `!del 2` |
-| `!pin [id]` | Set/unset priority | `!pin 3` |
-| `!edit [id] [nama baru]` | Edit nama tugas | `!edit 1 Laporan Final` |
+| `.done [id]` | Tandai selesai | `.done 1` |
+| `.del [id]` | Hapus tugas | `.del 2` |
+| `.pin [id]` | Set/unset priority | `.pin 3` |
+| `.edit [id] [nama baru]` | Edit nama tugas | `.edit 1 Laporan Final` |
 
 **Contoh:**
 
 ```
-!done 1          → Tandai tugas ID 1 selesai
-!del 2           → Hapus tugas ID 2
-!pin 3           → Set tugas ID 3 sebagai priority
-!edit 1 Nama Baru → Ubah nama tugas ID 1
+.done 1          → Tandai tugas ID 1 selesai
+.del 2           → Hapus tugas ID 2
+.pin 3           → Set tugas ID 3 sebagai priority
+.edit 1 Nama Baru → Ubah nama tugas ID 1
 ```
 
 ### 📋 Dashboard & Stats
 
 | Command | Fungsi |
 |---------|--------|
-| `!list` | Lihat dashboard tugas |
-| `!list aktif` | Lihat tugas aktif saja |
-| `!list done` | Lihat tugas selesai saja |
-| `!stats` | Statistik produktivitas |
-| `!menu` | Menu bantuan lengkap |
+| `.list` | Lihat dashboard tugas |
+| `.list aktif` | Lihat tugas aktif saja |
+| `.list done` | Lihat tugas selesai saja |
+| `.stats` | Statistik produktivitas |
+| `.menu` | Menu bantuan lengkap |
 
 ---
 
@@ -174,7 +171,7 @@ Bot:  ✅ Tugas Ditambahkan
 ### 2. Lihat Dashboard
 
 ```
-Kamu: !list
+Kamu: .list
 Bot:
 ─────────────────────
 📊 TASKFLOW DASHBOARD
@@ -200,7 +197,7 @@ Bot:
 ### 3. Tandai Selesai
 
 ```
-Kamu: !done 1
+Kamu: .done 1
 Bot:  ✅ Tugas Selesai!
 
 📌 Laporan AI
@@ -211,7 +208,7 @@ Bot:  ✅ Tugas Selesai!
 ### 4. Lihat Stats
 
 ```
-Kamu: !stats
+Kamu: .stats
 Bot:
 ─────────────────────
 📊 STATISTIK KAMU

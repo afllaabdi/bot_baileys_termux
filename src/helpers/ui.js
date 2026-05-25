@@ -24,7 +24,7 @@ class MessageUI {
         else if (hour < 21) greeting = "Selamat Sore";
         else greeting = "Selamat Malam";
 
-        const groupHint = isMentioned ? "" : "\n💡 Panggil saya dengan prefix `!` untuk akses command.";
+        const groupHint = isMentioned ? "" : "\n💡 Mention saya untuk akses command.";
 
         return `${greeting}! 👋
 
@@ -33,15 +33,15 @@ Saya TaskFlow, asisten produktivitas kamu.
 ━━━━━━━━━━━━━━━━━━━━━━━━
 📌 Cara cepat tambah tugas:
 
-${BULLET} !+nama tugas 2h
-${BULLET} !+meeting besok jam 8
-${BULLET} !+laporan 3hari
+${BULLET} +nama tugas 2h
+${BULLET} +meeting besok jam 8
+${BULLET} +laporan 3hari
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
-🔹 !list    → Lihat semua tugas
-🔹 !done 1  → Tandai selesai
-🔹 !del 1   → Hapus tugas
-🔹 !stats   → Statistik kamu${groupHint}`;
+🔹 .list    → Lihat semua tugas
+🔹 .done 1  → Tandai selesai
+🔹 .del 1   → Hapus tugas
+🔹 .stats   → Statistik kamu${groupHint}`;
     }
 
     static quickHelp() {
@@ -50,22 +50,22 @@ ${BULLET} !+laporan 3hari
 
 ${DIVIDER_THIN}
 ➕ *Tambah Tugas:*
-  !+nama 2h        → 2 jam
-  !+nama 3hari     → 3 hari
-  !+nama besok jam 8
+  +nama 2h        → 2 jam
+  +nama 3hari     → 3 hari
+  +nama besok jam 8
 
 ${DIVIDER_THIN}
 ⚡ *Quick Actions:*
-  !done 1   → Selesai
-  !del 1    → Hapus
-  !pin 1    → Priority
-  !edit 1 nama baru → Edit
+  .done 1   → Selesai
+  .del 1    → Hapus
+  .pin 1    → Priority
+  .edit 1 nama baru → Edit
 
 ${DIVIDER_THIN}
 📋 *Lainnya:*
-  !list   → Dashboard
-  !stats  → Statistik
-  !menu   → Menu lengkap
+  .list   → Dashboard
+  .stats  → Statistik
+  .menu   → Menu lengkap
 ${DIVIDER}`;
     }
 
@@ -75,36 +75,36 @@ ${DIVIDER}`;
 
 ${DIVIDER_THIN}
 ➕ *Tambah Tugas*
-  !+tugas 2h
-  !+tugas besok jam 8
-  !+tugas senin jam 10
-  !+tugas 3hari
+  +tugas 2h
+  +tugas besok jam 8
+  +tugas senin jam 10
+  +tugas 3hari
 
 ${DIVIDER_THIN}
 📝 *Lihat Tugas*
-  !list        → Semua
-  !list aktif  → Belum
-  !list done   → Selesai
+  .list        → Semua
+  .list aktif  → Belum
+  .list done   → Selesai
 
 ${DIVIDER_THIN}
 ⚡ *Quick Actions*
-  !done [id]   → Selesai
-  !del [id]    → Hapus
-  !pin [id]    → Priority
-  !edit [id] [nama baru]
+  .done [id]   → Selesai
+  .del [id]    → Hapus
+  .pin [id]    → Priority
+  .edit [id] [nama baru]
 
 ${DIVIDER_THIN}
 📊 *Stats*
-  !stats       → Statistik
+  .stats       → Statistik
 
 ${DIVIDER_THIN}
 💡 *Tips*
   • Mention bot untuk akses cepat
-  • ID tugas lihat di !list
+  • ID tugas lihat di .list
   • Priority (pin) = Urgent
   • Kategori = Otomatis
 
-Ketik !+nama tugas untuk mulai!
+Ketik +nama tugas untuk mulai!
 ${DIVIDER}`;
     }
 
