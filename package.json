@@ -1,0 +1,29 @@
+{
+  "name": "taskflow-bot",
+  "version": "3.0.0",
+  "description": "Modern WhatsApp Task Assistant with Smart Parsing",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "node bot.js",
+    "pm2:start": "pm2 start bot.js --name taskflow",
+    "pm2:stop": "pm2 stop taskflow",
+    "pm2:restart": "pm2 restart taskflow",
+    "pm2:logs": "pm2 logs taskflow",
+    "pm2:status": "pm2 status"
+  },
+  "keywords": [
+    "whatsapp",
+    "bot",
+    "task",
+    "reminder",
+    "productivity"
+  ],
+  "author": "TaskFlow",
+  "license": "MIT",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.0.0",
+    "pino": "^8.0.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
